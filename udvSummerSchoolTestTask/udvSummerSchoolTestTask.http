@@ -1,0 +1,6 @@
+@udvSummerSchoolTestTask_HostAddress = http://localhost:5089
+
+GET {{udvSummerSchoolTestTask_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

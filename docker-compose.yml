@@ -1,0 +1,6 @@
+﻿services:
+  udvsummerschooltesttask:
+    image: udvsummerschooltesttask
+    build:
+      context: .
+      dockerfile: udvSummerSchoolTestTask/Dockerfile
