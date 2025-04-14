@@ -3,4 +3,4 @@ using udvSummerSchoolTestTask.Entities;
 
 namespace udvSummerSchoolTestTask.Interfaces;
 
-public interface ILetterRepository : IRepository<LetterEntity>;
+public interface IStatisticsRepository : IRepository<StatisticEntity>;

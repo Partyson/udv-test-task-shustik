@@ -5,4 +5,4 @@ using udvSummerSchoolTestTask.Interfaces;
 
 namespace udvSummerSchoolTestTask.Repositories;
 
-public class UserRepository(ApplicationDbContext context) : Repository<UserEntity>(context), IUserRepository;
+public class StatisticsRepository (ApplicationDbContext context) : Repository<StatisticEntity>(context), IStatisticsRepository;

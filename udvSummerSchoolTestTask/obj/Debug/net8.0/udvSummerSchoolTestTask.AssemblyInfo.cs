@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("udvSummerSchoolTestTask")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f2caa870297954c07ea35fa01570aa409774c47e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+08f7c4d0ffb6fcd0b7076fd5f906bead716291b5")]
 [assembly: System.Reflection.AssemblyProductAttribute("udvSummerSchoolTestTask")]
 [assembly: System.Reflection.AssemblyTitleAttribute("udvSummerSchoolTestTask")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
