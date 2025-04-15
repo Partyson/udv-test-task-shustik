@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="DotNetEnv" Version="3.1.1" />
         <PackageReference Include="EntityFrameworkCore.Data.Repository" Version="8.0.3" />
         <PackageReference Include="EntityFrameworkCore.Data.UnitOfWork" Version="8.0.3" />
         <PackageReference Include="ErrorOr" Version="2.0.1" />

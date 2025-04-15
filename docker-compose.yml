@@ -1,6 +1,36 @@
 ﻿services:
-  udvsummerschooltesttask:
-    image: udvsummerschooltesttask
-    build:
-      context: .
-      dockerfile: udvSummerSchoolTestTask/Dockerfile
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: five_posts_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: 
+      dockerfile: ./udvSummerSchoolTestTask/Dockerfile
+    container_name: backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=five_posts_db;Username=postgres;Password=123
+    ports:
+      - "5089:80"
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
