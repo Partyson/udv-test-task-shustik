@@ -2,5 +2,7 @@
 
 public class StatisticResponseDto
 {
-    public Dictionary<char, int> Statistics { get; set; }
+    public string VkUserId { get; set; }
+    public Dictionary<char, int> Statistic { get; set; }
+    
 }

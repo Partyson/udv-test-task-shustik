@@ -1,6 +1,5 @@
 ﻿using ErrorOr;
 using udvSummerSchoolTestTask.Dto;
-using udvSummerSchoolTestTask.Entities;
 using udvSummerSchoolTestTask.Extensions;
 using udvSummerSchoolTestTask.Interfaces;
 
@@ -25,24 +24,25 @@ public class VkService : IVkService
     public async Task<ErrorOr<List<Guid>>> CreateStatistic(string vkUserId, int count)
     {
         logger.LogInformation($"Начало обработки для пользователя @{vkUserId}");
-        var accessToken = configuration["VkSettings:AccessToken"];
-        var apiVersion = configuration["VkSettings:ApiVersion"];
-        var url = $"https://api.vk.com/method/wall.get?domain={vkUserId}&count={count}&access_token={accessToken}&v={apiVersion}";
-        var response = await httpClient.GetFromJsonAsync<VkResponse>(url);
+        var query = statisticsRepository.MultipleResultQuery()
+            .AndFilter(x => x.VkUserId == vkUserId);
+        var statisticWithCurrentVkUserId = await statisticsRepository.SearchAsync(query);
+        if (statisticWithCurrentVkUserId.Count != 0)
+        {
+            logger.LogInformation($"Статистика для пользователя @{vkUserId} уже подсчитана");
+            return Error.Conflict("General.Conflict", $"Статистика для пользователя @{vkUserId} уже подсчитана");
+        }
+        var response = await httpClient.GetFromJsonAsync<VkResponse>(CreateVkUrl(vkUserId, count));
         
         if (response.Response == null)
         {
-            logger.LogInformation($"Посты пользователя @{vkUserId} не найдены на странице в вк");
-            return Error.Failure("General.NotFound", "Посты не найдены на странице в вк");
+            logger.LogInformation($"Пользователь @{vkUserId} скрыл свои записи от публичного доступа");
+            return Error.Failure("General.NotFound", $"Пользователь @{vkUserId} скрыл свои записи от публичного доступа");
         }
-        
-        var statisticEntities = response.Response.Items.CountLetters()
-            .Select(x => new StatisticEntity
-            {
-                Letter = x.Key,
-                Count = x.Value,
-                VkUserId = vkUserId
-            }).ToList();
+
+        var statisticEntities = response.Response.Items
+            .CreateStatisticEntities(vkUserId)
+            .ToList();
         await statisticsRepository.AddRangeAsync(statisticEntities);
         logger.LogInformation($"Успешно обработано и записано в базу данных {statisticEntities.Count} записей для пользователя @{vkUserId}");
         return statisticEntities.Select(x => x.Id).ToList();
@@ -51,7 +51,8 @@ public class VkService : IVkService
     public async Task<ErrorOr<StatisticResponseDto>> GetStatistic(string vkUserId)
     {
         var query = statisticsRepository.MultipleResultQuery()
-            .AndFilter(x => x.VkUserId == vkUserId);
+            .AndFilter(x => x.VkUserId == vkUserId)
+            .OrderBy(x => x.Letter);
         var statisticEntities = await statisticsRepository.SearchAsync(query);
         if (statisticEntities.Count == 0)
         {
@@ -61,9 +62,12 @@ public class VkService : IVkService
 
         return new StatisticResponseDto
         {
-            Statistics = statisticEntities
-                .OrderBy(x => x.Letter)
+            VkUserId = vkUserId,
+            Statistic = statisticEntities
                 .ToDictionary(x => x.Letter, x => x.Count),
         };
     }
+
+    private string CreateVkUrl(string vkUserId, int count) =>
+        $"https://api.vk.com/method/wall.get?domain={vkUserId}&count={count}&access_token={configuration["VkSettings:AccessToken"]}&v={configuration["VkSettings:ApiVersion"]}";
 }
