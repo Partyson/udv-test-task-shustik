@@ -26,7 +26,7 @@ public class VkController : ControllerBase
         await unitOfWork.SaveChangesAsync();
         if (result.IsError)
             return Problem(result.FirstError.Description, statusCode: result.FirstError.Type.ToStatusCode());
-        return Ok(result.Value);
+        return Ok($"Кол-во новых записей в базе данных: {result.Value}");
     }
 
     [HttpGet("get-statistic")]

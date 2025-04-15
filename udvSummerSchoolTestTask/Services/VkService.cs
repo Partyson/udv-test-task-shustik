@@ -21,7 +21,7 @@ public class VkService : IVkService
         this.logger = logger;
     }
 
-    public async Task<ErrorOr<List<Guid>>> CreateStatistic(string vkUserId, int count)
+    public async Task<ErrorOr<int>> CreateStatistic(string vkUserId, int count)
     {
         logger.LogInformation($"Начало обработки для пользователя @{vkUserId}");
         var query = statisticsRepository.MultipleResultQuery()
@@ -36,7 +36,7 @@ public class VkService : IVkService
         
         if (response.Response == null)
         {
-            logger.LogInformation($"Пользователь @{vkUserId} скрыл свои записи от публичного доступа");
+            logger.LogInformation($"Пользователь @{vkUserId} скрыл свои посты от публичного доступа");
             return Error.Failure("General.NotFound", $"Пользователь @{vkUserId} скрыл свои записи от публичного доступа");
         }
 
@@ -45,7 +45,7 @@ public class VkService : IVkService
             .ToList();
         await statisticsRepository.AddRangeAsync(statisticEntities);
         logger.LogInformation($"Успешно обработано и записано в базу данных {statisticEntities.Count} записей для пользователя @{vkUserId}");
-        return statisticEntities.Select(x => x.Id).ToList();
+        return statisticEntities.Count;
     }
 
     public async Task<ErrorOr<StatisticResponseDto>> GetStatistic(string vkUserId)
