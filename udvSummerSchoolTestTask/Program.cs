@@ -18,18 +18,20 @@ public class Program
         
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration).CreateLogger();
+        builder.Host.UseSerilog();
 
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-        
-        
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddHttpClient<IVkService, VkService>();
         services.AddScoped<IStatisticsRepository, StatisticsRepository>();
         
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        
+        builder.Services.AddScoped<DbContext>(provider => provider.GetService<ApplicationDbContext>()!);
         builder.Services.AddUnitOfWork();
         builder.Services.AddUnitOfWork<ApplicationDbContext>();
 

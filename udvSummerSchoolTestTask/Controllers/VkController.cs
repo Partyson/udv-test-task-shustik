@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using udvSummerSchoolTestTask.Extensions;
 using udvSummerSchoolTestTask.Interfaces;
 using udvSummerSchoolTestTask.Services;
 
@@ -24,10 +25,16 @@ public class VkController : ControllerBase
         var result = await vkService.CreateStatistic(vkUserId, count);
         await unitOfWork.SaveChangesAsync();
         if (result.IsError)
-        {
-            
-        }
+            return Problem(result.FirstError.Description, statusCode: result.FirstError.Type.ToStatusCode());
+        return Ok(result.Value);
+    }
 
+    [HttpGet("get-statistic")]
+    public async Task<ActionResult> GetStatistic(string vkUserId)
+    {
+        var result = await vkService.GetStatistic(vkUserId);
+        if (result.IsError)
+            return Problem(result.FirstError.Description, statusCode: result.FirstError.Type.ToStatusCode());
         return Ok(result.Value);
     }
 }
