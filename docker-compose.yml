@@ -1,36 +1,6 @@
-﻿version: '3.8'
-
-services:
-  db:
-    image: postgres:15
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: five_posts_db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  backend:
+﻿services:
+  udvsummerschooltesttask:
+    image: udvsummerschooltesttask
     build:
-      dockerfile: ./udvSummerSchoolTestTask/Dockerfile
-    container_name: backend
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=vk_analyzer_db;Username=postgres;Password=your_strong_password
-    ports:
-      - "5089:80"
-    volumes:
-      - ./logs:/app/logs
-
-volumes:
-  postgres_data:
+      context: .
+      dockerfile: udvSummerSchoolTestTask/Dockerfile
