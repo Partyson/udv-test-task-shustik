@@ -10,6 +10,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<StatisticEntity>()
-            .HasKey(x => x.Id);
+            .HasIndex(x => x.VkUserId);
     }
 }
